@@ -1,0 +1,24 @@
+
+# TASK 1
+- name: "Install List of pkgs"	
+  apt: pkg={{ item }} state=installed
+  with_items:
+   - vim
+   - dnsutils
+   - git
+
+# TASK 2
+- name: "copying a file"									
+  copy: src=../files/bash.bashrc dest=/etc/bash.bashrc owner=root group=root mode=0644
+
+# TASK 3
+- name: "removing a file" 									
+  shell: creates=/home/user/.bashrc.bkp mv /home/user/.bashrc /home/user/.bashrc.bkp
+
+
+# ............................................................................................................
+# 
+# NOTES: 
+# * tasks 1,2,3 redundant, can group all like in 4
+# * default state is "installed"
+# * creates parameter: check if exists otherwise noOps

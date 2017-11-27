@@ -1,0 +1,11 @@
+[servers]
+webserver
+appserver
+dbserver
+
+[db-servers]
+dbserver
+
+[testing]
+
+[production]

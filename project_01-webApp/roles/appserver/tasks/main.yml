@@ -1,0 +1,33 @@
+# TASK 1
+- name: "Installing Appserver SW"
+  apt: name={{ item }} state=installed
+  with_items:
+  -  gunicorn
+  -  supervisor
+  -  python-mysqldb
+  -  python-falcon
+
+# Task 2
+- name: "making sure Supervisor service is enabled/started"
+  service: name=supervisor state=started enabled=yes
+
+# Task 3
+- name: "created base repo for the app"
+  file: path=/opt/testApp state=directory owner=nobody group=nogroup mode=0755
+
+# Task 4
+- name: "Copy the App"
+  copy:  src=../files/testapp.py dest=/opt/testApp/testapp.py owner=nobody group=nogroup mode=0755
+  notify:
+  - restart-app
+
+# Task 5
+- name: "Copy supervisor config file"
+  template: src=../files/testapp.conf dest=/etc/supervisor/conf.d/testapp.conf owner=nobody group=nogroup mode=0644 
+  notify:
+  - reread-config
+  - restart-app
+
+# Task 6
+- name: "Adding IP of dbserver to /etc/hosts"
+  lineinfile: name=/etc/hosts line="{{ hostvars['dbserver']['ansible_eth0']['ipv4']['address'] }} dbserver" 

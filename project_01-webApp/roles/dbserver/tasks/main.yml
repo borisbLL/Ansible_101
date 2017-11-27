@@ -1,0 +1,30 @@
+# TASK 1
+- name: "Installing dbserver SW"
+  apt: name={{ item }} state=installed
+  with_items:
+  - mysql-server
+  - python-mysqldb
+
+# TASK 2
+- name: "Adding db backup cronjob"
+  cron: hour=10 minute=22 user=root job="/usr/bin/mysqldump --al-databases > /root/dbbackup.dump" name="MySQL Backup"
+
+# TASK 3
+- name: "Checking/Adding db"
+  mysql_db: name=ansibletutorial state=present
+  notify:
+  - import-db
+
+# TASK 4
+- name: "Copying dbDump"
+  copy: src=../files/dbdump.sql dest=/var/tmp/dbdump.sql owner=root group=root mode=0600
+
+# TASK 5
+- name: "Granting user access"
+  mysql_user: name=ansibletutorial host=% priv=ansibletutorial.*:ALL password={{ lookup('password', 'credentials/dbpassword.txt') }}
+
+# TASK 6
+- name: "Allowing remote access"
+  copy: src=../files/n-mysql-bind.cnf dest=/etc/mysql/mysql.conf.d/n-mysql-bind.cnf owner=root group=root mode=0644
+  notify:
+  - restart-mysql

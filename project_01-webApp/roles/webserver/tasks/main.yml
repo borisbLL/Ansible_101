@@ -1,0 +1,19 @@
+- name: "Install/Update Apache Webserver"
+  apt: name=apache2 state=latest
+# yum: name=apache2 state=latest
+
+- name: "Config Apache"
+  template: src=../file/httpd.tmpl dest=/etc/apache2/httpd.conf owner=root group=root mode=0644
+  notify:
+  - restart-apache 
+
+- name: "check Apache status"
+  service: name=httpd state=started enabled=yes
+
+- name: "Enabling proxy module"
+  apache2_module: name=proxy_http  
+
+- name: "Adding Proxy Config for apache2"
+  template: src=../file/proxy.conf dest=/etc/apache2/conf-available owner=root group=root mode=0644
+  notify:
+  - enable-proxy-config
